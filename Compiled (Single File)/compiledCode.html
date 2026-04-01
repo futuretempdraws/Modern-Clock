@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern Clock</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', sans-serif; }
+
+    body, html {
+        height: 100%; width: 100%; background: #1e1e1e; color: #fff; transition: background 0.3s, color 0.3s; overflow: hidden; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    }
+    :root {
+      --blur-bg-light: rgba(224, 224, 224, 0.15);
+      --blur-bg-dark: rgba(31, 31, 31, 0.15);
+      --text-light: #1f1f1f;
+      --text-dark: #e6e6e6;
+    }
+    #clock-container {
+        position: relative; padding-left: 25px; padding-right: 25px;
+    }
+    #clock-bg {
+        position: absolute; inset: 0; border-radius: 64px;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        z-index: 0; display: none; transition: opacity 0.5s ease
+    } 
+    #clock {
+        font-size: 10rem; font-weight: bold; letter-spacing: 2px;
+        z-index: 1; position: relative;
+        transition: color 0.5s ease, text-shadow 0.5s ease;
+        color: #fff; text-align: center;
+    }
+
+    .controls {
+        display: flex; gap: 1rem; background: rgba(255, 255, 255, 0.15);
+        padding: 1rem 2rem; border-radius: 64px; backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px); width: 850px; justify-content: center; z-index: 1;
+        transition: background 0.3s ease; flex-wrap: wrap;
+    }
+    .controls {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%) translateY(0);
+        opacity: 0; /* hidden by default */
+        transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+    .controls {
+        transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease;
+    }
+
+    .controls button {
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .control-group { display: flex; align-items: center; gap: 0.5rem; }
+    label { font-size: 0.95rem; white-space: nowrap; }
+    select, input[type="color"] {
+        padding: 0.35rem 0.75rem; border-radius: 24px; border: none;
+        font-size: 0.95rem; cursor: pointer; background: rgba(255,255,255,0.2); color: #fff; appearance: none;
+        transition: color 0.5s ease, background 0.3s ease;
+    }
+    select option { color: #000; background: #fff; }
+
+    /* Modern toggle switch */
+    .switch {
+        position: relative; display: inline-block; width: 50px; height: 26px;
+    }
+    /* Make the hidden checkbox cover the whole switch so it's clickable */
+    .switch { position: relative; }
+    .switch input {
+      position: absolute;
+      inset: 0;            /* top:0; right:0; bottom:0; left:0 */
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 2;          /* above the slider background */
+    }
+    .slider {
+        position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+        background-color: rgba(255,255,255,0.3); transition: 0.4s; border-radius: 26px;
+    }
+    .slider:before {
+        position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
+        background-color: white; transition: 0.4s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: rgba(200,200,200,0.5); }
+    input:checked + .slider:before { transform: translateX(24px); }
+
+    .upload-btn { display: inline-flex; align-items: center; justify-content: center;
+        width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.25);
+        cursor: pointer; transition: background 0.2s;
+    }
+    .upload-btn:hover { background: rgba(255,255,255,0.4); }
+    .upload-btn svg { width: 22px; height: 22px; fill: #fff; }
+    input[type="file"] { display: none; }
+
+    body::before {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background-size: cover; background-position: center; z-index: 0; transition: background-image 0.5s ease;
+    }
+
+    :root{
+      /* JS will update this to white/black with alpha */
+      --ambient-color: rgba(255,255,255,0.45);
+    }
+    
+    /* Ambient style for the CLOCK only: keep the overlay blend */
+    .ambient-clock{
+      color: var(--ambient-color);
+      -webkit-background-clip: text;
+      background-clip: text;
+      mix-blend-mode: overlay;
+      text-shadow: 0 0 8px rgba(255,255,255,0.20);
+      transition: color 0.5s ease, text-shadow 0.5s ease;
+    }
+
+    /* Ambient style for normal text (labels, date, simple spans) – NO blend mode */
+    .ambient-ui{
+      color: var(--ambient-color);
+      text-shadow: 0 0 6px rgba(0,0,0,0.12);
+      transition: color 0.3s ease;
+    }
+
+    /* Make sure UI controls don’t inherit funky blending even by accident */
+    .controls select,
+    .controls input,
+    .controls .switch,
+    .controls .upload-btn {
+      mix-blend-mode: normal;
+    }
+
+    /* Make color inputs appear as colored buttons */
+    input[type="color"] {
+        appearance: none; -webkit-appearance: none; -moz-appearance: none; border: none; width: 60px; height: 27px;
+        border-radius: 24px; padding: 0; cursor: pointer;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch {
+        border: none; border-radius: 24px;
+    }
+    .upload-icon {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fff;
+      user-select: none;
+    }
+    .upload-btn:hover .upload-icon {
+      color: #ddd;
+    }
+    #clock-bg,
+    .controls,
+    #settings-btn,
+    .top-bar,
+    #dateBackground {
+      transition: background 0.5s ease, color 0.5s ease;
+      color: var(--text-dark); /* default text */
+    }
+    /* === make header & UI follow the theme color variable === */
+    #app-name,
+    #weather,
+    .top-right-text,
+    #settings-btn span,
+    .upload-icon,
+    .controls label {
+      color: var(--text-color);
+      transition: color 0.25s ease;
+    }
+    #settings-btn {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(20px);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease;
+      z-index: 2;
+    }
+    #settings-btn:hover { transform: translateX(-50%) scale(1.1); background: rgba(255,255,255,0.25); }
+    #settings-btn span {
+      font-size: 1.5rem; font-weight: bold; color: #fff; user-select: none;
+    }
+    .top-right-text {
+      font-size: 12px;
+      padding: 4px;
+      border-radius: 24px;
+      margin: 0;
+      transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    }
+      .top-right-text:hover {
+      border-radius: 24px;
+      transition: background-color 0.3s ease-in-out;
+    }
+    #dateBackground {
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.15);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 0;
+    }
+    .top-bar {
+      background-color: rgba(50, 50, 50, 0.1); /* Semi-transparent dark gray */
+      color: #f0f0f0; /* Off-white text color */
+      height: 31px; /* Typical macOS menu bar height */
+      width: 100%;
+      position: fixed; /* Keeps the bar at the top even when scrolling */
+      top: 0;
+      left: 0;
+      backdrop-filter: blur(20px); /* Blurs content behind the bar, a key Apple effect */
+      -webkit-backdrop-filter: blur(20px); /* For Safari support */
+      display: flex; /* Uses Flexbox for alignment */
+      justify-content: space-between; /* Pushes content to the left and right edges */
+      align-items: center; /* Centers items vertically */
+      padding: 0 10px; /* Some padding on the sides */
+      box-sizing: border-box; /* Ensures padding doesn't affect the width */
+      z-index: 1000; /* Ensures the bar is on top of other content */
+      border-radius: 0 0 12px 12px;
+    }
+    #app-name {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    #weather {
+      font-size: 14px;
+      text-align: center;
+      flex: 1;
+    }
+    
+    #date-position {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #blur-toggle {
+      transform: scale(0.8);
+    }
+    /* -----------------------------
+      No-blur helper (toggle off all blurs)
+      ----------------------------- */
+    .no-blur {
+      -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
+    }
+
+    /* When blur is disabled, we'll also force a fallback semitransparent background.
+      JS will set the correct background color per current light/dark mode; this rule
+      keeps a safe fallback. */
+    .no-blur[data-bg="dark"] {
+      background: rgba(0,0,0,0.20) !important;
+    }
+    .no-blur[data-bg="light"] {
+      background: rgba(255,255,255,0.12) !important;
+    }
+
+    /* Optional: small transition so disabling/enabling blur feels smooth */
+    #clock-bg, .controls, #settings-btn, .top-bar, #dateBackground {
+      transition: background 0.35s ease, color 0.25s ease, backdrop-filter 0.35s ease;
+    }
+    /* Background URL input matching controls */
+    #bg-url-group input {
+      background: rgba(255,255,255,0.08);
+      color: var(--text-color, #fff);
+      border-radius: 20px;
+      padding: 0.35rem 0.6rem;
+      border: none;
+      outline: none;
+      width: 320px;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    #bg-url-group button {
+      background: rgba(255,255,255,0.12);
+      color: var(--text-color, #fff);
+      border: none;
+      border-radius: 20px;
+      padding: 0.35rem 0.75rem;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.08s ease;
+    }
+    #bg-url-group button:hover { transform: translateY(-1px); background: rgba(255,255,255,0.18); }
+    #bg-url-group input::placeholder { color: rgba(255,255,255,0.45); }
+    /* --- Floating widgets FAB (reuses settings-btn look) --- */
+    .fab-btn {
+      position: absolute;
+      bottom: 15px;
+      left: calc(50% + 38px); /* sits a bit to the right of center; adjust to taste */
+      transform: translateX(-50%);
+      width: 60px; height: 60px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(20px);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 1200;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .fab-btn:hover { transform: translateX(-50%) scale(1.08); background: rgba(255,255,255,0.22); }
+    .fab-btn span { font-size: 1.5rem; color: #fff; user-select: none; }
+    
+    .fab-btn { color: var(--text-color); }
+    .fab-btn span { color: var(--text-color); }
+    
+    /* If you already have #settings-btn, ensure left offsets don't clash:
+       #settings-btn kept at left: calc(50% - 38px) is expected. */
+    
+    /* --- Widgets panel overlay --- */
+    #widgets-panel {
+      position: fixed;
+      inset: 6vh 6vw; /* takes up most of the screen with margins */
+      background: rgba(20,20,20,0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 18px;
+      display: none; /* hidden by default */
+      z-index: 2000;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      overflow: hidden;
+      color: var(--text-color, #fff);
+    }
+    
+    /* inner wrapper for spacing */
+    .widgets-panel-inner { height: 100%; display:flex; flex-direction:column; }
+    
+    /* header */
+    .widgets-panel-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 18px 28px;
+    }
+    .widgets-panel-header h2 { margin-right: 14px; font-size: 1.2rem; }
+    .widget-mode-row { display:flex; align-items:center; gap:10px; }
+    
+    /* small switch style override (smaller) */
+    .switch.small { transform: scale(0.85); }
+    
+    /* divider */
+    .divider { border: none; height: 1px; background: rgba(255,255,255,0.06); margin: 0 20px; }
+    
+    /* body */
+    .widgets-panel-body { padding: 16px 24px 28px 24px; overflow:auto; flex:1; }
+    
+    /* toolbar */
+    .widgets-toolbar { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .widgets-toolbar .hint { color: rgba(255,255,255,0.6); font-size:0.9rem; margin-left: 12px; }
+    
+    /* grid */
+    .widgets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+    
+    /* widget tile */
+    .widget-tile {
+      background: rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 96px;
+      position: relative;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+      cursor: grab;
+      user-select: none;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      overflow: hidden;
+    }
+    .widget-tile:active { cursor: grabbing; transform: scale(0.998); }
+    
+    /* controls in corners */
+    .widget-controls { position:absolute; top:8px; right:8px; display:flex; gap:6px; z-index:2; }
+    .widget-controls .widget-delete,
+    .widget-controls .widget-edit { background: rgba(255,255,255,0.06); border: none; border-radius:8px; padding:6px; cursor:pointer; }
+    
+    /* Title / content */
+    .widget-title { font-weight:600; margin-bottom:6px; }
+    .widget-body { font-size: 0.95rem; color: rgba(255,255,255,0.9); }
+    
+    /* resize handle visual */
+    .resize-handle {
+      position:absolute;
+      width:18px; height:18px;
+      bottom:6px; right:6px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+      border-radius: 4px;
+      cursor: se-resize;
+      z-index:3;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.4) inset;
+    }
+    
+    /* Small icon button */
+    .icon-btn { background:transparent; color:var(--text-color); border:none; cursor:pointer; font-size:18px; padding:6px; }
+    
+    /* Visible when panel open */
+    #widgets-panel[aria-hidden="false"] { display: block; }
+    
+    /* Visual styling when widget mode active (for grid & tile handles) */
+    .widget-mode-active .widget-tile { outline: 2px dashed rgba(255,255,255,0.06); }
+    .widget-mode-active .resize-handle { opacity: 1; }
+    .widget-mode-active .widget-controls { opacity: 1; }
+    
+    /* By default hide controls/handles to avoid noisy UI when not in widget mode */
+    .widget-controls { opacity: 0; transition: opacity 0.18s ease; pointer-events:none; }
+    .resize-handle { opacity: 0; transition: opacity 0.18s ease; pointer-events:none; }
+    .widget-mode-active .widget-controls { pointer-events:auto; }
+    /* --- Desktop grid when widget mode active --- */
+    body.widget-mode-active {
+      cursor: default;
+    }
+    
+    /* Visual grid overlay for snapping (only visible while active) */
+    #desktop-grid-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1100;
+      background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0;
+      transition: opacity 0.28s ease;
+    }
+    body.widget-mode-active #desktop-grid-overlay { opacity: 1; }
+    
+    /* When we place a widget on the desktop, it's absolutely positioned */
+    .desktop-widget {
+      position: absolute;
+      z-index: 1110;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+      cursor: grab;
+      transition: transform 0.18s ease, opacity 0.2s ease;
+    }
+    
+    /* When dragging/following pointer */
+    .desktop-widget.dragging {
+      transform: scale(1.02);
+      opacity: 0.95;
+      cursor: grabb
+    }
+    
+    /* show controls on hover on both panel & desktop */
+    .widget-tile .widget-controls,
+    .desktop-widget .widget-controls { opacity: 0; pointer-events: none; transition: opacity 0.12s ease; }
+    .widget-tile:hover .widget-controls,
+    .desktop-widget:hover .widget-controls { opacity: 1; pointer-events: auto; }
+    
+    /* ensure resize handle doesn't trigger drag cursor */
+    .resize-handle { touch-action: none; }
+    
+    /* styling: make widgets-btn follow #settings-btn styling */
+    #widgets-btn, #settings-btn {
+      /* share base style; if you prefer one source, give both class="fab-btn" */
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(20px);
+      color: var(--text-color);
+    }
+    #widgets-btn span { color: var(--text-color); }
+    
+    /* smooth transition for the main clock turning into widget */
+    #clock-container.transitioning {
+      transition: transform 0.35s cubic-bezier(.2,.9,.2,1), opacity 0.28s ease;
+    }
+
+    .blurControlINPUT {
+        width: 55px;
+        border-radius: 50px;
+        height: 25px;
+    }
+
+    input {
+        border: none;
+        outline: none;
+        text-align: center;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+  </style>
+</head>
+<body>
+<!-- Desktop snap/grid overlay (hidden unless widget-mode active) -->
+<div id="desktop-grid-overlay" aria-hidden="true"></div>
+
+<!-- TO DO: Add iOS-like features. Clean up settings and options so it looks nicer and easier to look at. Add option for maybe regular clock (With hands and stuff). Make it so that certain toggles and options hide others, because they're not needed. -->
+<div id="settings-btn" class="fab-btn"><span>⛭</span></div>
+
+<!-- <div id="widgets-btn" class="fab-btn" aria-label="Widgets panel" title="Widgets">
+  <span>▦</span>
+</div> -->
+
+<!-- WIDGETS PANEL (overlay) - put somewhere near other root elements (e.g. after .top-bar or at end of body) -->
+<div id="widgets-panel" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="widgets-panel-inner">
+    <header class="widgets-panel-header">
+      <div class="left">
+        <h2>Widgets</h2>
+        <div class="widget-mode-row">
+          <label for="widgetModeToggle">Widget Mode</label>
+          <label class="switch small">
+            <input type="checkbox" id="widgetModeToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="right">
+        <button id="widgets-panel-close" class="icon-btn" aria-label="Close widgets panel">✕</button>
+      </div>
+    </header>
+
+    <hr class="divider">
+
+    <main class="widgets-panel-body">
+      <div class="widgets-toolbar">
+        <button id="addWidgetBtn" class="btn">+ Add Widget</button>
+        <span class="hint">Drag while <strong>Widget Mode</strong> is ON to rearrange. Resize by dragging the corner.</span>
+      </div>
+
+      <section id="widgets-grid" class="widgets-grid" aria-live="polite">
+        <!-- Example widget tile -->
+        <div class="widget-tile" data-id="w-1" draggable="false">
+          <div class="widget-controls">
+            <button class="widget-delete" title="Delete">✕</button>
+            <button class="widget-edit" title="Edit">✎</button>
+          </div>
+          <div class="widget-content">
+            <div class="widget-title">Modern Clock</div>
+            <div class="widget-body">00:00:00</div>
+          </div>
+          <div class="resize-handle" title="Resize"></div>
+        </div>
+
+        <div class="widget-tile" data-id="w-2" draggable="false">
+          <div class="widget-controls">
+            <button class="widget-delete" title="Delete">✕</button>
+            <button class="widget-edit" title="Edit">✎</button>
+          </div>
+          <div class="widget-content">
+            <div class="widget-title">Weather</div>
+            <div class="widget-body">72° ☀️</div>
+          </div>
+          <div class="resize-handle" title="Resize"></div>
+        </div>
+
+        <!-- add more placeholders -->
+        <div class="widget-tile" data-id="w-3" draggable="false">
+          <div class="widget-controls">
+            <button class="widget-delete" title="Delete">✕</button>
+            <button class="widget-edit" title="Edit">✎</button>
+          </div>
+          <div class="widget-content">
+            <div class="widget-title">Simple Date</div>
+            <div class="widget-body">Aug 22, 2025</div>
+          </div>
+          <div class="resize-handle" title="Resize"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="top-bar">
+  <div id="app-name">Modern Clock</div>
+  <div id="weather">--°</div>
+  <div id="date-position">
+    <div id="blur-toggle" class="switch">
+      <input type="checkbox" id="blurMode">
+      <span class="slider"></span>
+    </div>
+    <p id="currentDate" class="top-right-text"></p>
+    <div id="dateBackground"></div>
+  </div>
+</div>
+
+
+<div id="clock-container">
+    <div id="clock-bg"></div>
+    <div id="clock">00:00:00</div>
+</div>
+
+<div class="controls">
+    <div class="control-group">
+        <label for="format">Hour Format:</label>
+        <select id="format"><option value="12">12-hour</option><option value="24">24-hour</option></select>
+    </div>
+    <div class="control-group">
+        <label for="color">Text Color:</label>
+        <input type="color" id="color" value="#ffffff">
+    </div>
+    <div class="control-group">
+        <label for="style">Text Style:</label>
+        <select id="style"><option value="solid">Solid</option><option value="ambient">Ambient</option></select>
+    </div>
+    <div class="control-group">
+        <label for="seconds">Show Seconds:</label>
+        <label class="switch">
+            <input type="checkbox" id="seconds" checked>
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="control-group">
+        <label for="bgcolor">Background:</label>
+        <input type="color" id="bgcolor" value="#1e1e1e">
+        <label class="upload-btn" for="bgimage"><span class="upload-icon">+</span></label>
+        <input type="file" id="bgimage" accept="image/*">
+    </div>
+    <div class="control-group" id="bg-url-group">
+        <label for="bgurl">Background URL:</label>
+        <input id="bgurl" type="text" placeholder="Paste image URL and press Enter" style="width:250px; padding:0.35rem 0.6rem; border-radius:20px; border:none; background: rgba(255,255,255,0.08); color:inherit;">
+        <button id="applyBgUrl" style="padding:0.35rem 0.75rem; border-radius:20px; border:none; cursor:pointer;">Apply</button>
+        <button id="clearBgUrl" style="padding:0.35rem 0.75rem; border-radius:20px; border:none; cursor:pointer;">Clear</button>
+    </div>
+    <div class="control-group">
+        <label for="clockbg">Clock Background:</label>
+        <label class="switch">
+            <input type="checkbox" id="clockbg">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="control-group">
+        <label for="autotext">Auto Text Color:</label>
+        <label class="switch">
+            <input type="checkbox" id="autotext" checked>
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="control-group">
+        <label for="enableBlur">Enable Blur Effects:</label>
+        <label class="switch">
+            <input type="checkbox" id="enableBlur" checked>
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div class="control-group">
+        <label for="blurControl">Blur Value (1-100):</label>
+        <input type="number" class="blurControlINPUT" min="1" max="100" inputmode="numeric" placeholder="#px">
+    </div>
+    <div class="control-group">
+        <label for="showTopBar">Show Top Bar:</label>
+        <label class="switch">
+            <input type="checkbox" id="showTopBar" checked>
+            <span class="slider"></span>
+        </label>
+    </div>
+</div>
+<script>
+    const clock = document.getElementById('clock');
+    const clockBg = document.getElementById('clock-bg');
+    const clockBgToggle = document.getElementById('clockbg');
+    const formatSelect = document.getElementById('format');
+    const colorPicker = document.getElementById('color');
+    const styleSelect = document.getElementById('style');
+    const bgPicker = document.getElementById('bgcolor');
+    const bgImage = document.getElementById('bgimage');
+    const bgUrlInput = document.getElementById('bgurl');
+    const applyBgUrlBtn = document.getElementById('applyBgUrl');
+    const clearBgUrlBtn = document.getElementById('clearBgUrl');
+    const secondsCheckbox = document.getElementById('seconds');
+    const controlsTextElements = document.querySelectorAll('.controls *');
+    const settingsBtn = document.getElementById('settings-btn');
+    const autoTextToggle = document.getElementById('autotext');
+    const uiTextNodes = document.querySelectorAll('label, .top-right-text, #settings-btn span, .upload-icon, #app-name, #weather'); // This is where you'll update the text that will update when ambient mode is turned on or off //
+    const isAmbient = () => styleSelect.value === 'ambient';
+
+    // Small helper if you ever want to set ambient via the color picker in solid hex
+    const hexToRgba = (hex, a = 0.45) => {
+    const h = hex.replace('#','');
+    const r = parseInt(h.substring(0,2),16);
+    const g = parseInt(h.substring(2,4),16);
+    const b = parseInt(h.substring(4,6),16);
+    return `rgba(${r},${g},${b},${a})`;
+    };
+    const controlsPanel = document.querySelector('.controls');
+    let panelOpen = false;
+
+    const now = new Date();
+
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    const formattedDate = now.toLocaleDateString('en-US', options);
+    const dateElement = document.getElementById('currentDate');
+    dateElement.innerHTML = formattedDate;
+
+    // --- New element references (place with other consts) ---
+    const blurEffectsToggle = document.getElementById('enableBlur');
+    const topBarToggle = document.getElementById('showTopBar');
+    const topBar = document.querySelector('.top-bar');
+
+    // utility to query the blur elements in one place
+    const blurElementsSelector = '#clock-bg, .controls, #settings-btn, .top-bar, #dateBackground';
+    const blurElements = document.querySelectorAll(blurElementsSelector);
+
+    settingsBtn.addEventListener('click', () => {
+        panelOpen = !panelOpen;
+        controlsPanel.style.transition = 'transform 0.5s cubic-bezier(0.25,1,0.5,1), opacity 0.5s ease';
+        if(panelOpen){
+            controlsPanel.style.transform = 'translateX(-50%) translateY(-10px)'; // move up
+            controlsPanel.style.opacity = '1';
+        } else {
+            controlsPanel.style.transform = 'translateX(-50%) translateY(0)';
+            controlsPanel.style.opacity = '0';
+        }
+    settingsBtn.style.display = panelOpen ? 'none' : 'flex';
+    });
+
+    document.addEventListener('click', (e) => {
+        if(panelOpen && !controlsPanel.contains(e.target) && !settingsBtn.contains(e.target)){
+            controlsPanel.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            controlsPanel.style.transform = 'translateX(-50%) translateY(0)';
+            controlsPanel.style.opacity = '0';
+            panelOpen = false;
+            settingsBtn.style.display = 'flex';
+        }
+    });
+
+    function updateClock() {
+        const now = new Date();
+        let hours = now.getHours();
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
+
+        if (formatSelect.value === '12') hours = hours % 12 || 12;
+
+        let timeStr = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}`;
+        if(secondsCheckbox.checked) timeStr += `:${seconds.toString().padStart(2,'0')}`;
+        clock.textContent = timeStr;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function applyClockStyle() {
+    // Clear prior classes
+    clock.classList.remove('ambient-clock');
+    dateElement.classList.remove('ambient-ui');
+    uiTextNodes.forEach(n => n.classList.remove('ambient-ui'));
+
+    if (isAmbient()) {
+        // Add ambient classes
+        clock.classList.add('ambient-clock');
+        dateElement.classList.add('ambient-ui');
+        uiTextNodes.forEach(n => n.classList.add('ambient-ui'));
+
+        // If auto text is OFF, drive ambient color from the color picker immediately
+        if (!autoTextToggle.checked) {
+        const amb = hexToRgba(colorPicker.value, 0.75);
+        // set ambient variable AND use it for UI text by updating --text-color
+        document.documentElement.style.setProperty('--ambient-color', amb);
+        document.documentElement.style.setProperty('--text-color', amb);
+        clock.style.color = amb;     // clock is special (blend mode); keep this
+        setDateColor(amb);
+
+        // remove inline color from UI nodes so CSS variable takes over
+        uiTextNodes.forEach(n => n.style.color = '');
+        controlsTextElements.forEach(el => { if (el.tagName !== 'INPUT' || el.type !== 'file') el.style.color = ''; });
+        }
+        // If auto text is ON, updateTextColor() will set the variables periodically.
+    } else {
+        // SOLID mode: set from color picker right now
+        const solid = colorPicker.value;
+        // clock still gets direct color
+        clock.style.color = solid;
+        setDateColor(solid);
+
+        // use CSS variable for all other UI text
+        document.documentElement.style.setProperty('--text-color', solid);
+
+        // remove inline styles so CSS variable applies uniformly
+        controlsTextElements.forEach(el => {
+        if (el.tagName !== 'INPUT' || el.type !== 'file') el.style.color = '';
+        });
+        uiTextNodes.forEach(n => n.style.color = '');
+    }
+    }
+
+    colorPicker.addEventListener('input', () => {
+    if (isAmbient() && !autoTextToggle.checked) {
+        const amb = hexToRgba(colorPicker.value, 0.75);
+        document.documentElement.style.setProperty('--ambient-color', amb);
+        clock.style.color = amb;
+        setDateColor(amb);
+        uiTextNodes.forEach(n => n.style.color = amb);
+    } else {
+        applyClockStyle();
+    }
+    });
+
+    bgPicker.addEventListener('input', () => {
+        document.body.style.background = bgPicker.value;
+        document.body.style.backgroundImage = '';
+    });
+
+    styleSelect.addEventListener('change', applyClockStyle);
+    secondsCheckbox.addEventListener('change', updateClock);
+    formatSelect.addEventListener('change', updateClock);
+
+    clockBgToggle.addEventListener('change', () => {
+        clockBg.style.display = clockBgToggle.checked ? 'block' : 'none';
+    });
+
+    bgImage.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if(file){
+            const reader = new FileReader();
+            reader.onload = function(event){
+                const img = new Image();
+                img.onload = () => {
+                    document.body.style.transition = 'background-image 0.5s ease';
+                    document.body.style.backgroundImage = `url('${event.target.result}')`;
+                    document.body.style.backgroundSize = 'cover';
+                    document.body.style.backgroundPosition = 'center';
+                    document.body.style.backgroundRepeat = 'no-repeat';
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Apply when button clicked
+    applyBgUrlBtn.addEventListener('click', () => {
+    applyBackgroundFromUrl(bgUrlInput.value);
+    });
+
+    // Apply when pressing Enter inside the input
+    bgUrlInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        applyBackgroundFromUrl(bgUrlInput.value);
+    }
+    });
+
+    // Clear
+    clearBgUrlBtn.addEventListener('click', () => {
+    bgUrlInput.value = '';
+    clearBackgroundImage();
+    });
+
+    // Automatic text color detection for clock and controls with interval, adapted for images
+    let textColorInterval = 500; // editable interval in ms
+    function computeBrightnessFromImage(){
+        return new Promise(resolve => {
+            const bodyBg = window.getComputedStyle(document.body).backgroundImage;
+            if(bodyBg && bodyBg !== 'none'){
+                const imgUrl = bodyBg.slice(5, -2);
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width; canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                    let r=0,g=0,b=0, count=0;
+                    for(let i=0; i<data.length; i+=4){
+                        r += data[i]; g += data[i+1]; b += data[i+2]; count++;
+                    }
+                    r = Math.floor(r/count); g = Math.floor(g/count); b = Math.floor(b/count);
+                    resolve((r*299 + g*587 + b*114)/1000);
+                };
+                img.onerror = () => resolve(127); // fallback brightness
+                img.src = imgUrl;
+            } else {
+                const computedBg = window.getComputedStyle(document.body).backgroundColor;
+                let r=0,g=0,b=0;
+                if(computedBg.startsWith('rgb')){
+                    const vals = computedBg.match(/\d+/g);
+                    r = parseInt(vals[0]); g = parseInt(vals[1]); b = parseInt(vals[2]);
+                } else {
+                    const hex = computedBg.replace('#','');
+                    r = parseInt(hex.substring(0,2),16);
+                    g = parseInt(hex.substring(2,4),16);
+                    b = parseInt(hex.substring(4,6),16);
+                }
+                resolve((r*299 + g*587 + b*114)/1000);
+            }
+        });
+    }
+
+    function setDateColor(c) {
+    if (!dateElement) return;       // safety
+    dateElement.style.transition = 'color 0.3s ease';
+    dateElement.style.color = c;
+    }
+    
+    async function updateTextColor(){
+    const brightness = await computeBrightnessFromImage();
+    const solid = (brightness < 128) ? '#fff' : '#000';
+    const ambient = (brightness < 128) ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)';
+
+    if (isAmbient()) {
+        // Drive ambient via CSS vars; let CSS variable control UI text
+        document.documentElement.style.setProperty('--ambient-color', ambient);
+        document.documentElement.style.setProperty('--text-color', ambient);
+        clock.style.transition = 'color 0.5s ease';
+        clock.style.color = ambient;
+        // remove inline colors so CSS var can be used everywhere
+        uiTextNodes.forEach(n => { n.style.transition = 'color 0.3s ease'; n.style.color = ''; });
+        controlsTextElements.forEach(el => { if (el.tagName !== 'INPUT' || el.type !== 'file') el.style.color = ''; });
+        setDateColor(ambient);
+    } else {
+        // SOLID: set CSS var for global UI text and clock
+        document.documentElement.style.setProperty('--text-color', solid);
+        clock.style.transition = 'color 0.5s ease';
+        clock.style.color = solid;
+        controlsTextElements.forEach(el => {
+        el.style.transition = 'color 0.5s ease';
+        if (el.tagName !== 'INPUT' || el.type !== 'file') el.style.color = '';
+        if (el.tagName === 'OPTION') el.style.backgroundColor = '';
+        });
+        uiTextNodes.forEach(n => n.style.color = '');
+        setDateColor(solid);
+    }
+
+    // dateBackground tweaks (keeps same)
+    const dateBg = document.getElementById('dateBackground');
+    if (dateBg) {
+        dateBg.style.background = (brightness >= 128) ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.15)';
+        dateBg.style.backdropFilter = 'blur(20px)';
+        dateBg.style.webkitBackdropFilter = 'blur(20px)';
+        dateBg.style.borderRadius = '24px';
+    }
+    }
+
+    setInterval(() => {
+        if (autoTextToggle.checked) updateTextColor();
+    }, textColorInterval);
+
+    if(autoTextToggle.checked) updateTextColor();
+
+    // Safety: clicking anywhere on the visual switch should toggle the checkbox
+    const blurSwitch = document.getElementById('blur-toggle');
+    const blurToggle = document.getElementById('blurMode');
+
+    blurSwitch.addEventListener('click', (e) => {
+    // If the click wasn't directly on the checkbox, flip it manually
+    if (e.target !== blurToggle) {
+        blurToggle.checked = !blurToggle.checked;
+        blurToggle.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    });
+
+    function applyBlurTheme(isLight) {
+    const root = document.documentElement;
+    const get = (v) => getComputedStyle(root).getPropertyValue(v).trim();
+
+    // derive values from :root CSS variables
+    const blurBg = isLight ? get('--blur-bg-light') : get('--blur-bg-dark');
+    const textColor = isLight ? get('--text-light') : get('--text-dark');
+
+    // update CSS variables (these are what the CSS reads)
+    root.style.setProperty('--blur-bg', blurBg);
+    root.style.setProperty('--text-color', textColor);
+
+    // Set backgrounds for blur elements, but do NOT set inline color
+    document.querySelectorAll('#clock-bg, .controls, #settings-btn, .top-bar, #dateBackground')
+        .forEach(el => {
+        el.style.background = blurBg;
+        // don't set el.style.color here: let CSS var handle it
+        el.style.transition = 'background 0.5s ease, color 0.5s ease';
+        });
+    }
+
+    // --- Toggle blur effects on/off ---
+    function setBlurEnabled(enabled, isLightMode = null) {
+    // isLightMode optional: if provided, will set data-bg attribute for color fallback
+    blurElements.forEach(el => {
+        if (enabled) {
+        // remove no-blur class to restore blur/backdrop-filter
+        el.classList.remove('no-blur');
+        // remove any inline backdrop style overrides
+        el.style.backdropFilter = '';
+        el.style.webkitBackdropFilter = '';
+        el.removeAttribute('data-bg');
+        } else {
+        // disable blur by adding class and set a fallback tint depending on current mode
+        el.classList.add('no-blur');
+        if (isLightMode === true) el.setAttribute('data-bg','light');
+        else if (isLightMode === false) el.setAttribute('data-bg','dark');
+        // Also explicitly remove backdrop style just in case
+        el.style.backdropFilter = 'none';
+        el.style.webkitBackdropFilter = 'none';
+        }
+    });
+    }
+
+    // Event: when user toggles the blur effects switch
+    blurEffectsToggle.addEventListener('change', () => {
+    // Determine current light/dark via your existing blurToggle or CSS var
+    // If you use the blurMode checkbox for light/dark, use blurToggle.checked;
+    // otherwise, detect computed --text-color or similar. Here we use blurToggle as in your code.
+    const isLightMode = !!blurToggle.checked; // true when light mode is active
+    setBlurEnabled(blurEffectsToggle.checked, isLightMode);
+    });
+
+    // --- Toggle top bar visibility ---
+    function setTopBarVisible(visible) {
+    if (!topBar) return;
+    topBar.style.display = visible ? '' : 'none'; // '' -> default (flex from CSS)
+    // If hiding the top bar you may want to reposition the settings button
+    // (it sits near bottom center now, so typically nothing else required).
+    }
+
+    topBarToggle.addEventListener('change', () => {
+    setTopBarVisible(topBarToggle.checked);
+    });
+
+    blurToggle.addEventListener('change', () => {
+    if (blurToggle.checked) {
+        // Light mode
+        document.documentElement.style.setProperty('--blur-bg', getComputedStyle(document.documentElement).getPropertyValue('--blur-bg-light'));
+        document.documentElement.style.setProperty('--text-color', getComputedStyle(document.documentElement).getPropertyValue('--text-light'));
+        applyBlurTheme(true);
+    } else {
+        // Dark mode
+        document.documentElement.style.setProperty('--blur-bg', getComputedStyle(document.documentElement).getPropertyValue('--blur-bg-dark'));
+        document.documentElement.style.setProperty('--text-color', getComputedStyle(document.documentElement).getPropertyValue('--text-dark'));
+        applyBlurTheme(false);
+    }
+    // after applyBlurTheme(true/false) runs:
+    const blurIsEnabled = blurEffectsToggle ? blurEffectsToggle.checked : true;
+    // If blur is disabled, re-run setBlurEnabled to update the fallback bg mode
+    if (!blurIsEnabled) {
+        const isLightMode = blurToggle.checked; // true = light
+        setBlurEnabled(false, isLightMode);
+    }
+    });
+
+    /**
+     * Try to apply a remote image URL as the page background.
+     * - Preloads the image (crossOrigin attempt).
+     * - Detects CORS tainting by attempting a small canvas read.
+     * - Sets document.body.style.backgroundImage and triggers updateTextColor().
+     */
+    function applyBackgroundFromUrl(url) {
+    if (!url || url.trim() === '') {
+        clearBackgroundImage();
+        return;
+    }
+
+    const sanitized = url.trim();
+
+    // Basic URL sanity (http(s) or data:)
+    if (!/^https?:\/\//i.test(sanitized) && !/^data:/i.test(sanitized)) {
+        alert('Please enter a valid image URL (http(s) or data URL).');
+        return;
+    }
+
+    const img = new Image();
+    // Try to request crossOrigin so canvas read works if the host allows it
+    img.crossOrigin = 'Anonymous';
+
+    // show quick feedback (optional): set a temporary blurred background while loading
+    // document.body.style.opacity = 0.95;
+
+    img.onload = () => {
+        // Try a small canvas read to detect whether the image is usable for brightness sampling
+        let canReadPixels = true;
+        try {
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.min(200, img.width);
+        canvas.height = Math.min(200, img.height);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        // try reading one pixel — will throw if CORS blocks it
+        ctx.getImageData(0, 0, 1, 1);
+        } catch (err) {
+        // If we get here, the image loaded but the canvas is tainted (CORS)
+        canReadPixels = false;
+        console.warn('Background image is CORS-tainted — automatic brightness detection may be unavailable.', err);
+        }
+
+        // Apply the background image regardless of CORS
+        document.body.style.backgroundImage = `url('${sanitized}')`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundRepeat = 'no-repeat';
+
+        // If we could read pixels, let existing auto-text-color run to compute brightness.
+        // If not, call updateTextColor() anyway; computeBrightnessFromImage will fallback to computed background color
+        // (which would be the body color) — so it won't capture image brightness. You can prompt the user to
+        // choose text color if that matters.
+        if (canReadPixels) {
+        // short delay to let computed styles settle
+        setTimeout(() => updateTextColor(), 40);
+        } else {
+        // If canvas read failed (CORS), fall back to a reasonable choice:
+        // decide by checking image filename for "dark"/"light" keywords as a small heuristic, else keep current behavior.
+        let fallbackIsDark = /dark|night|black|midnight/i.test(sanitized);
+        document.documentElement.style.setProperty('--text-color', fallbackIsDark ? '#fff' : '#000');
+        // Also nudge the clock color (clock is special)
+        clock.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim();
+        }
+    };
+
+    img.onerror = () => {
+        alert('Image failed to load. Check the URL or try another image.');
+    };
+
+    // Kick off loading
+    img.src = sanitized;
+    }
+
+    /** Clears any background image and revert to current background color */
+    function clearBackgroundImage() {
+    document.body.style.backgroundImage = '';
+    // No change to bg color itself; if you want to force bgPicker color:
+    if (bgPicker && bgPicker.value) {
+        document.body.style.background = bgPicker.value;
+    } else {
+        document.body.style.background = ''; // fallback to default CSS
+    }
+    // Recompute text color
+    setTimeout(() => updateTextColor(), 40);
+    }
+
+    // Default: dark mode
+    document.documentElement.style.setProperty('--blur-bg', getComputedStyle(document.documentElement).getPropertyValue('--blur-bg-dark'));
+    document.documentElement.style.setProperty('--text-color', getComputedStyle(document.documentElement).getPropertyValue('--text-dark'));
+
+    async function fetchWeatherGov(lat, lon) {
+    try {
+        // Step 1: Find the forecast office & grid for this lat/lon
+        const pointUrl = `https://api.weather.gov/points/${lat},${lon}`;
+        const pointRes = await fetch(pointUrl, {
+        headers: { "User-Agent": "ModernClockApp (ignacio.shanks@gmail.com)" }
+        });
+        if (!pointRes.ok) throw new Error("Failed to fetch point data");
+
+        const pointData = await pointRes.json();
+        const forecastUrl = pointData.properties.forecastHourly;
+
+        // Step 2: Fetch hourly forecast from the URL provided
+        const forecastRes = await fetch(forecastUrl, {
+        headers: { "User-Agent": "ModernClockApp (ignacio.shanks@gmail.com)" }
+        });
+        if (!forecastRes.ok) throw new Error("Failed to fetch forecast");
+
+        const forecastData = await forecastRes.json();
+
+        // Step 3: Get the first period (current hour’s forecast)
+        const current = forecastData.properties.periods[0];
+
+        // Extract temp + condition
+        const temp = current.temperature;
+        const unit = current.temperatureUnit; // F or C
+        const condition = current.shortForecast;
+
+        // Pick an emoji based on condition
+        let emoji = "☀️";
+        if (condition.includes("Cloud")) emoji = "☁️";
+        if (condition.includes("Rain")) emoji = "🌧️";
+        if (condition.includes("Snow")) emoji = "❄️";
+        if (condition.includes("Thunder")) emoji = "⛈️";
+        if (condition.includes("Fog")) emoji = "🌫️";
+
+        // Display on your clock
+        document.getElementById("weather").textContent = `${temp}°${unit} ${emoji}`;
+    } catch (err) {
+        console.error("Weather.gov error:", err);
+        document.getElementById("weather").textContent = "--°";
+    }
+    }
+
+    function getWeatherWithGeolocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            fetchWeatherByCoords(lat, lon);
+        },
+        (err) => {
+            console.warn("Geolocation denied or unavailable:", err);
+            // fallback city
+            fetchWeatherByCoords(40.7128, -74.0060); // NYC as default
+        }
+        );
+    } else {
+        console.warn("Geolocation not supported.");
+        fetchWeatherByCoords(40.7128, -74.0060);
+    }
+    }
+
+    /* ======= Widgets panel / widget-mode wiring ======= */
+
+    // DOM refs (place after existing const declarations)
+    const widgetsBtn = document.getElementById('widgets-btn');
+    const widgetsPanel = document.getElementById('widgets-panel');
+    const widgetsPanelClose = document.getElementById('widgets-panel-close');
+    const widgetModeToggle = document.getElementById('widgetModeToggle');
+    const widgetsGrid = document.getElementById('widgets-grid');
+    const addWidgetBtn = document.getElementById('addWidgetBtn');
+
+    // open/close the panel
+    function openWidgetsPanel() {
+    widgetsPanel.setAttribute('aria-hidden','false');
+    // trap focus if you want (basic)
+    widgetsPanel.querySelector('.widgets-panel-inner').focus?.();
+    }
+    function closeWidgetsPanel() {
+    widgetsPanel.setAttribute('aria-hidden','true');
+    }
+
+    // toggle widget mode on body for site-wide changes
+    function setWidgetMode(active) {
+    if (active) {
+        document.body.classList.add('widget-mode-active');
+        // make tiles draggable now
+        Array.from(widgetsGrid.children).forEach(tile => tile.setAttribute('draggable', 'true'));
+    } else {
+        document.body.classList.remove('widget-mode-active');
+        Array.from(widgetsGrid.children).forEach(tile => tile.setAttribute('draggable', 'false'));
+    }
+    }
+
+    // basic open/close events
+    widgetsBtn.addEventListener('click', (e) => {
+    openWidgetsPanel();
+    // show the panel and keep existing settings button visible per your preference
+    });
+    widgetsPanelClose.addEventListener('click', closeWidgetsPanel);
+    // close on outside click (panel overlay is inside; we will close when pressing ESC)
+    document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && widgetsPanel.getAttribute('aria-hidden') === 'false') closeWidgetsPanel();
+    });
+
+    // widget mode toggle
+    widgetModeToggle.addEventListener('change', () => {
+    setWidgetMode(widgetModeToggle.checked);
+    });
+
+    // add widget button (creates a new placeholder tile)
+    let widgetCounter = (widgetsGrid.children.length || 0) + 1;
+    addWidgetBtn.addEventListener('click', () => {
+    widgetCounter++;
+    const tile = document.createElement('div');
+    tile.className = 'widget-tile';
+    tile.dataset.id = `w-${Date.now()}`;
+    tile.draggable = widgetModeToggle.checked;
+    tile.innerHTML = `
+        <div class="widget-controls">
+        <button class="widget-delete" title="Delete">✕</button>
+        <button class="widget-edit" title="Edit">✎</button>
+        </div>
+        <div class="widget-content">
+        <div class="widget-title">New Widget</div>
+        <div class="widget-body">Placeholder content</div>
+        </div>
+        <div class="resize-handle" title="Resize"></div>
+    `;
+    widgetsGrid.appendChild(tile);
+    wireWidgetTile(tile);
+    });
+
+    // wire up existing tiles
+    function wireWidgetTile(tile) {
+    // delete
+    const del = tile.querySelector('.widget-delete');
+    const edit = tile.querySelector('.widget-edit');
+    const handle = tile.querySelector('.resize-handle');
+
+    del?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = tile.dataset.id;
+        if (confirm('Delete widget?')) {
+        tile.remove();
+        }
+    });
+
+    edit?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Hook: open individual widget settings — placeholder:
+        alert(`Widget settings for ${tile.dataset.id} (implement UI later)`);
+    });
+
+    // Simple resizing inside the panel
+    if (handle) {
+        let resizing = false;
+        let startX, startY, startW, startH;
+
+        handle.addEventListener('pointerdown', (e) => {
+        if (!widgetModeToggle.checked) return;
+        e.stopPropagation();
+        resizing = true;
+        tile.dataset.resizing = 'true';
+        startX = e.clientX;
+        startY = e.clientY;
+        const rect = tile.getBoundingClientRect();
+        startW = rect.width;
+        startH = rect.height;
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+        if (!resizing) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        // set inline size (constrained)
+        tile.style.width = Math.max(140, startW + dx) + 'px';
+        tile.style.height = Math.max(80, startH + dy) + 'px';
+        });
+
+        window.addEventListener('mouseup', () => {
+        if (resizing) {
+            resizing = false;
+            document.body.style.userSelect = '';
+            tile.dataset.resizing = 'false';
+        }
+        });
+    }
+
+    // Drag & drop handlers for reordering
+    tile.addEventListener('dragstart', (e) => {
+        if (!widgetModeToggle.checked) { e.preventDefault(); return; }
+        tile.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', tile.dataset.id || '');
+        // store reference
+        draggingTile = tile;
+    });
+    tile.addEventListener('dragend', () => {
+        tile.classList.remove('dragging');
+        draggingTile = null;
+    });
+    }
+
+    // wire each initial tile
+    let draggingTile = null;
+    Array.from(widgetsGrid.children).forEach(child => wireWidgetTile(child));
+
+    // grid drop handling
+    widgetsGrid.addEventListener('dragover', (e) => {
+    if (!widgetModeToggle.checked) return;
+    e.preventDefault();
+    const after = getDragAfterElement(widgetsGrid, e.clientX, e.clientY);
+    if (after == null) {
+        widgetsGrid.appendChild(draggingTile);
+    } else {
+        widgetsGrid.insertBefore(draggingTile, after);
+    }
+    });
+
+    function getDragAfterElement(container, x, y) {
+    const draggableElements = [...container.querySelectorAll('.widget-tile:not(.dragging)')];
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        // choose the element with smallest negative offset (closest above)
+        if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+        } else {
+        return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element || null;
+    }
+
+    /* ===== Desktop drop & clock-as-widget support ===== */
+
+    // Required DOM refs
+    const desktopOverlay = document.getElementById('desktop-grid-overlay');
+    const clockContainer = document.getElementById('clock-container'); // existing
+    const mainBody = document.body;
+
+    // snap grid size (px)
+    const SNAP = 20;
+
+    // Helper: snap coordinate to grid
+    const snapToGrid = (v) => Math.round(v / SNAP) * SNAP;
+
+    // Track which tile is currently dragging/moving
+    let currentDraggingTile = null;
+    let resizingTile = null;
+
+    // Convert a panel tile (inside widgetsGrid) into a desktop-placed widget
+    function placeTileOnDesktop(tile, clientX, clientY) {
+    // If tile is originally in the panel, remove and append to body
+    const rect = document.documentElement.getBoundingClientRect();
+
+    // Make it absolute positioned
+    tile.classList.add('desktop-widget');
+    // remove grid flow classes if any
+    tile.style.width = tile.offsetWidth + 'px';
+    tile.style.height = tile.offsetHeight + 'px';
+    // position centered on pointer
+    const left = snapToGrid(clientX - tile.offsetWidth / 2);
+    const top  = snapToGrid(clientY - tile.offsetHeight / 2);
+    tile.style.left = left + 'px';
+    tile.style.top = top + 'px';
+
+    // append to body (top-level desktop)
+    document.body.appendChild(tile);
+
+    // make draggable/movable on desktop
+    tile.setAttribute('draggable', 'false'); // we use pointer drag on desktop
+    wireDesktopDrag(tile);
+    }
+
+    // When widget-mode is toggled, convert clock into a widget-like tile (in-place)
+    // and when turned off, if clock has been placed on desktop, consider restoring layout.
+    function toggleClockWidgetActive(active) {
+    if (active) {
+        // mark clock-container as widget-like
+        clockContainer.classList.add('widget-tile', 'desktop-widget', 'main-clock-widget');
+        // set a reasonable size & style
+        clockContainer.style.width = clockContainer.offsetWidth + 'px';
+        clockContainer.style.height = clockContainer.offsetHeight + 'px';
+        // center if not already absolute
+        const cx = window.innerWidth/2 - clockContainer.offsetWidth/2;
+        const cy = window.innerHeight/2 - clockContainer.offsetHeight/2;
+        clockContainer.style.left = snapToGrid(cx) + 'px';
+        clockContainer.style.top = snapToGrid(cy) + 'px';
+        clockContainer.style.position = 'absolute';
+        // show overlay
+        mainBody.classList.add('widget-mode-active');
+    } else {
+        // remove widget classes and cleanup if needed
+        clockContainer.classList.remove('main-clock-widget');
+        clockContainer.style.position = '';
+        clockContainer.style.left = '';
+        clockContainer.style.top = '';
+        clockContainer.style.width = '';
+        clockContainer.style.height = '';
+        mainBody.classList.remove('widget-mode-active');
+    }
+    }
+
+    // When a drag is initiated inside the widgets panel, we auto-close the panel and let the user drop on desktop
+    widgetsGrid.addEventListener('dragstart', (e) => {
+    const tileId = e.dataTransfer.getData('text/plain') || (e.target && e.target.closest('.widget-tile')?.dataset.id);
+    const tile = widgetsGrid.querySelector(`[data-id="${tileId}"]`) || e.target.closest('.widget-tile');
+    if (!tile) return;
+    // If the user is currently resizing this tile, block drag
+    if (tile.dataset.resizing === 'true') { e.preventDefault(); return; }
+
+    // auto-close the panel so pointer can drop on page
+    closeWidgetsPanel();
+
+    // brief delay to ensure panel closed, then place tile into body as desktop widget at cursor location on drop
+    currentDraggingTile = tile;
+    // highlight overlay
+    desktopOverlay.style.opacity = '1';
+    });
+
+    // For safety: suppress dragstart when resizing is active
+    widgetsGrid.addEventListener('dragstart', (e) => {
+    const tile = e.target.closest('.widget-tile');
+    if (tile && tile.dataset.resizing === 'true') {
+        e.preventDefault();
+    }
+    });
+
+    // Desktop drop handlers
+    document.addEventListener('dragover', (e) => {
+    if (!widgetModeToggle.checked) return;
+    e.preventDefault(); // allow drop
+    });
+
+    document.addEventListener('drop', (e) => {
+    if (!widgetModeToggle.checked) return;
+    e.preventDefault();
+    desktopOverlay.style.opacity = '0';
+    // find the tile id
+    const id = e.dataTransfer.getData('text/plain') || (currentDraggingTile && currentDraggingTile.dataset.id);
+    let tile = widgetsGrid.querySelector(`[data-id="${id}"]`) || currentDraggingTile;
+    if (!tile) return;
+
+    // Move tile to desktop
+    placeTileOnDesktop(tile, e.clientX, e.clientY);
+
+    // clear dragging state
+    currentDraggingTile = null;
+    });
+
+    // Make existing panel tiles close panel & prepare to place when dragstart fired on them
+    // Also ensure hover shows controls (we already have CSS), so no JS needed for that except pointer events.
+
+    // Wire desktop drag via pointer (so user can pick up placed widget and move it around)
+    function wireDesktopDrag(tile) {
+    let offsetX = 0, offsetY = 0, dragging = false;
+
+    tile.addEventListener('pointerdown', (ev) => {
+        // If clicking a control (delete/edit/resize), ignore move
+        if (ev.target.closest('.widget-controls') || ev.target.closest('.resize-handle')) return;
+        if (!widgetModeToggle.checked) return;
+        dragging = true;
+        tile.setPointerCapture(ev.pointerId);
+        tile.classList.add('dragging');
+        offsetX = ev.clientX - tile.getBoundingClientRect().left;
+        offsetY = ev.clientY - tile.getBoundingClientRect().top;
+        ev.preventDefault();
+    });
+
+    window.addEventListener('pointermove', (ev) => {
+        if (!dragging) return;
+        const left = snapToGrid(ev.clientX - offsetX);
+        const top  = snapToGrid(ev.clientY - offsetY);
+        tile.style.left = left + 'px';
+        tile.style.top  = top + 'px';
+    });
+
+    window.addEventListener('pointerup', (ev) => {
+        if (!dragging) return;
+        dragging = false;
+        tile.classList.remove('dragging');
+        try { tile.releasePointerCapture(ev.pointerId); } catch {}
+    });
+
+    // Make sure resize handle still works (existing resizing code will apply)
+    wireWidgetTile(tile); // ensure controls wired (delete/edit/resizer) for moved tile
+    }
+
+    /* ----- prevent resizing triggering dragstart ----- */
+    // When mousedown on resize-handle in panel tiles we set dataset.resizing flag.
+    // In earlier wireWidgetTile code we used handle mousedown to set local resizing boolean.
+    // We'll extend that to set a data attribute while resizing is active.
+
+    document.addEventListener('pointerdown', (e) => {
+    const handle = e.target.closest('.resize-handle');
+    if (!handle) return;
+    const tile = handle.closest('.widget-tile');
+    if (!tile) return;
+    tile.dataset.resizing = 'true';
+    });
+
+    document.addEventListener('pointerup', (e) => {
+    const handle = e.target.closest('.resize-handle');
+    if (handle) {
+        const tile = handle.closest('.widget-tile');
+        if (tile) tile.dataset.resizing = 'false';
+    }
+    // Also clear any tiles still flagged after pointer up anywhere
+    document.querySelectorAll('.widget-tile[data-resizing="true"]').forEach(t => t.dataset.resizing = 'false');
+    });
+
+    /* ----- reacting to widget-mode toggle: overlay + clock transform ----- */
+    widgetModeToggle.addEventListener('change', () => {
+    const active = widgetModeToggle.checked;
+    // show overlay grid background
+    desktopOverlay.style.display = active ? 'block' : 'none';
+    // transform clock
+    toggleClockWidgetActive(active);
+
+    // if deactivating widget mode, ensure overlay removed
+    if (!active) {
+        desktopOverlay.style.opacity = '0';
+    }
+    });
+
+    // make sure initial state sync (in case toggle checked on load)
+    desktopOverlay.style.display = widgetModeToggle.checked ? 'block' : 'none';
+    if (widgetModeToggle.checked) toggleClockWidgetActive(true);
+
+    /* Optional: ensure widgets-panel doesn't steal focus or cause accidental actions
+    You can extend with a focus trap and ARIA announcements later. */
+
+
+    // API key for weather api services: 60854b06bb29402b8b0152713252208 //
+
+    // Save when toggles change
+    blurEffectsToggle.addEventListener('change', () => {
+    localStorage.setItem('modernClock.enableBlur', blurEffectsToggle.checked ? '1' : '0');
+    setBlurEnabled(blurEffectsToggle.checked, !!blurToggle.checked);
+    });
+    topBarToggle.addEventListener('change', () => {
+    localStorage.setItem('modernClock.showTopBar', topBarToggle.checked ? '1' : '0');
+    setTopBarVisible(topBarToggle.checked);
+    });
+
+    // On init (before setBlurEnabled / setTopBarVisible) try to load:
+    const storedBlur = localStorage.getItem('modernClock.enableBlur');
+    if (storedBlur !== null) blurEffectsToggle.checked = storedBlur === '1';
+    const storedBar = localStorage.getItem('modernClock.showTopBar');
+    if (storedBar !== null) topBarToggle.checked = storedBar === '1';
+
+    // Keep checkbox and visuals in sync on load (false = dark)
+    blurToggle.checked = false;
+    applyBlurTheme(false);
+    fetchWeatherGov(lat, lon);
+    setInterval(getWeatherWithGeolocation, 15 * 60 * 1000);
+    applyClockStyle();
+    updateTextColor();
+    setBlurEnabled(blurEffectsToggle.checked, !!blurToggle.checked);
+    setTopBarVisible(topBarToggle.checked);
+</script>
+</body>
+</html>
