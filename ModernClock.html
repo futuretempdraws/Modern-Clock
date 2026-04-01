@@ -6,18 +6,15 @@
   <title>Project StillStream</title>
   <link rel="stylesheet" href="ClockStyling.css">
 </head>
-<body>
-<!-- Desktop snap/grid overlay (hidden unless widget-mode active) -->
-<div id="desktop-grid-overlay" aria-hidden="true"></div>
 
-<!-- TO DO: Add iOS-like features. Clean up settings and options so it looks nicer and easier to look at. Add option for maybe regular clock (With hands and stuff). Make it so that certain toggles and options hide others, because they're not needed. -->
+<body>
+<div id="desktop-grid-overlay" aria-hidden="true"></div>
 <div id="settings-btn" class="fab-btn"><span>⛭</span></div>
 
 <!-- <div id="widgets-btn" class="fab-btn" aria-label="Widgets panel" title="Widgets">
   <span>▦</span>
 </div> -->
 
-<!-- WIDGETS PANEL (overlay) - put somewhere near other root elements (e.g. after .top-bar or at end of body) -->
 <div id="widgets-panel" aria-hidden="true" role="dialog" aria-modal="true">
   <div class="widgets-panel-inner">
     <header class="widgets-panel-header">
@@ -45,16 +42,17 @@
       </div>
 
       <section id="widgets-grid" class="widgets-grid" aria-live="polite">
-        <!-- Example widget tile -->
         <div class="widget-tile" data-id="w-1" draggable="false">
           <div class="widget-controls">
             <button class="widget-delete" title="Delete">✕</button>
             <button class="widget-edit" title="Edit">✎</button>
           </div>
+
           <div class="widget-content">
             <div class="widget-title">Modern Clock</div>
             <div class="widget-body">00:00:00</div>
           </div>
+
           <div class="resize-handle" title="Resize"></div>
         </div>
 
@@ -63,23 +61,25 @@
             <button class="widget-delete" title="Delete">✕</button>
             <button class="widget-edit" title="Edit">✎</button>
           </div>
+
           <div class="widget-content">
             <div class="widget-title">Weather</div>
             <div class="widget-body">72° ☀️</div>
           </div>
+
           <div class="resize-handle" title="Resize"></div>
         </div>
-
-        <!-- add more placeholders -->
         <div class="widget-tile" data-id="w-3" draggable="false">
           <div class="widget-controls">
             <button class="widget-delete" title="Delete">✕</button>
             <button class="widget-edit" title="Edit">✎</button>
           </div>
+
           <div class="widget-content">
             <div class="widget-title">Simple Date</div>
             <div class="widget-body">Aug 22, 2025</div>
           </div>
+
           <div class="resize-handle" title="Resize"></div>
         </div>
       </section>
@@ -89,14 +89,18 @@
 
 <div class="top-bar">
   <div id="app-name">Project StillStream</div>
+
   <div id="weather">--°</div>
+
   <div id="date-position">
     <p style="font-size: 12px;">v1.2</p>
     <div id="blur-toggle" class="switch">
       <input type="checkbox" id="blurMode">
       <span class="slider"></span>
     </div>
+
     <p id="currentDate" class="top-right-text"></p>
+
     <div id="dateBackground"></div>
   </div>
 </div>
@@ -104,6 +108,7 @@
 
 <div id="clock-container">
     <div id="clock-bg"></div>
+
     <div id="clock">00:00:00</div>
 </div>
 
@@ -112,14 +117,17 @@
         <label for="format">Hour Format:</label>
         <select id="format"><option value="12">12-hour</option><option value="24">24-hour</option></select>
     </div>
+
     <div class="control-group">
         <label for="color">Text Color:</label>
         <input type="color" id="color" value="#ffffff">
     </div>
+
     <div class="control-group">
         <label for="style">Text Style:</label>
         <select id="style"><option value="solid">Solid</option><option value="ambient">Ambient</option></select>
     </div>
+
     <div class="control-group">
         <label for="seconds">Show Seconds:</label>
         <label class="switch">
@@ -127,18 +135,21 @@
             <span class="slider"></span>
         </label>
     </div>
+
     <div class="control-group">
         <label for="bgcolor">Background:</label>
         <input type="color" id="bgcolor" value="#1e1e1e">
         <label class="upload-btn" for="bgimage"><span class="upload-icon">+</span></label>
         <input type="file" id="bgimage" accept="image/*">
     </div>
+
     <div class="control-group" id="bg-url-group">
         <label for="bgurl">Background URL:</label>
         <input id="bgurl" type="text" placeholder="Paste image URL and press Enter" style="width:250px; padding:0.35rem 0.6rem; border-radius:20px; border:none; background: rgba(255,255,255,0.08); color:inherit;">
         <button id="applyBgUrl" style="padding:0.35rem 0.75rem; border-radius:20px; border:none; cursor:pointer;">Apply</button>
         <button id="clearBgUrl" style="padding:0.35rem 0.75rem; border-radius:20px; border:none; cursor:pointer;">Clear</button>
     </div>
+
     <div class="control-group">
         <label for="clockbg">Clock Background:</label>
         <label class="switch">
@@ -146,6 +157,7 @@
             <span class="slider"></span>
         </label>
     </div>
+
     <div class="control-group">
         <label for="autotext">Auto Text Color:</label>
         <label class="switch">
@@ -153,6 +165,7 @@
             <span class="slider"></span>
         </label>
     </div>
+
     <div class="control-group">
         <label for="enableBlur">Enable Blur Effects:</label>
         <label class="switch">
@@ -160,10 +173,12 @@
             <span class="slider"></span>
         </label>
     </div>
+
     <div class="control-group">
         <label for="blurControl">Blur Value (1-100):</label>
         <input type="number" id="blurControl" class="blurControlINPUT" min="1" max="100" inputmode="numeric" placeholder="#px">
     </div>
+
     <div class="control-group">
         <label for="showTopBar">Show Top Bar:</label>
         <label class="switch">
@@ -171,6 +186,7 @@
             <span class="slider"></span>
         </label>
     </div>
+
 </div>
 <script src="ModernClockFunction.js"></script>
 </body>
