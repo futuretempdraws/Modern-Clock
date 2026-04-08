@@ -20,8 +20,8 @@ body, html {
 }
 
 :root {
-  --blur-bg-light: rgba(224, 224, 224, 0.15);
-  --blur-bg-dark: rgba(31, 31, 31, 0.15);
+  --blur-bg-light: rgba(255, 255, 255, 0.326);
+  --blur-bg-dark: rgba(6, 6, 6, 0.36);
   --text-light: #1f1f1f;
   --text-dark: #e6e6e6;
   --blur-amount: 20px;
@@ -213,20 +213,18 @@ body::before {
 
 :root {
   /* JS will update this to white/black with alpha */
-  --ambient-color: rgba(255, 255, 255, 0.45);
+  --ambient-color: rgba(255, 255, 255, 1);
 }
 
-/* Ambient style for the CLOCK only: keep the overlay blend */
 .ambient-clock {
   color: var(--ambient-color);
   -webkit-background-clip: text;
   background-clip: text;
-  mix-blend-mode: overlay;
+  mix-blend-mode: luminosity;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.20);
   transition: color 0.5s ease, text-shadow 0.5s ease;
 }
 
-/* Ambient style for normal text (labels, date, simple spans) – NO blend mode */
 .ambient-ui {
   color: var(--ambient-color);
   text-shadow: 0 0 6px rgba(0, 0, 0, 0.12);

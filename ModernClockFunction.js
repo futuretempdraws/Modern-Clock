@@ -131,7 +131,7 @@ function applyClockStyle() {
 
 colorPicker.addEventListener('input', () => {
   if (isAmbient() && !autoTextToggle.checked) {
-    const amb = hexToRgba(colorPicker.value, 0.75);
+    const amb = hexToRgba(colorPicker.value, 1);
     document.documentElement.style.setProperty('--ambient-color', amb);
     clock.style.color = amb;
     setDateColor(amb);
@@ -394,9 +394,19 @@ blurEffectsToggle.addEventListener('change', () => {
 // --- Toggle top bar visibility ---
 function setTopBarVisible(visible) {
   if (!topBar) return;
-  topBar.style.display = visible ? '' : 'none'; // '' -> default (flex from CSS)
-  // If hiding the top bar you may want to reposition the settings button
-  // (it sits near bottom center now, so typically nothing else required).
+  if (visible) {
+    // Show background and blur, apply current theme
+    topBar.style.backgroundColor = '';
+    topBar.style.backdropFilter = '';
+    topBar.style.WebkitBackdropFilter = '';
+    // Reapply the current theme to match the UI
+    applyBlurTheme(blurToggle.checked);
+  } else {
+    // Hide background and blur, keep text visible
+    topBar.style.backgroundColor = 'transparent';
+    topBar.style.backdropFilter = 'none';
+    topBar.style.WebkitBackdropFilter = 'none';
+  }
 }
 
 topBarToggle.addEventListener('change', () => {
