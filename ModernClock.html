@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,18 +9,19 @@
 </head>
 
 <body>
-<div id="desktop-grid-overlay" aria-hidden="true"></div>
-<div id="settings-btn" class="fab-btn"><span>⛭</span></div>
+  <div id="desktop-grid-overlay" aria-hidden="true"></div>
+  <div id="settings-btn" class="fab-btn"><span>⛭</span></div>
 
-<!-- <div id="widgets-btn" class="fab-btn" aria-label="Widgets panel" title="Widgets">
+  <!-- <div id="widgets-btn" class="fab-btn" aria-label="Widgets panel" title="Widgets">
   <span>▦</span>
 </div> -->
 
-<div id="widgets-panel" aria-hidden="true" role="dialog" aria-modal="true">
-  <div class="widgets-panel-inner">
-    <header class="widgets-panel-header">
-      <div class="left">
-        <h2>Widgets</div>h2>
+  <div id="widgets-panel" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="widgets-panel-inner">
+      <header class="widgets-panel-header">
+        <div class="left">
+          <h2>Widgets
+        </div>h2>
         <div class="widget-mode-row">
           <label for="widgetModeToggle">Widget Mode</label>
           <label class="switch small">
@@ -27,10 +29,10 @@
             <span class="slider"></span>
           </label>
         </div>
-      </div>
-      <div class="right">
-        <button id="widgets-panel-close" class="icon-btn" aria-label="Close widgets panel">✕</button>
-      </div>
+    </div>
+    <div class="right">
+      <button id="widgets-panel-close" class="icon-btn" aria-label="Close widgets panel">✕</button>
+    </div>
     </header>
 
     <hr class="divider">
@@ -38,7 +40,8 @@
     <main class="widgets-panel-body">
       <div class="widgets-toolbar">
         <button id="addWidgetBtn" class="btn">+ Add Widget</button>
-        <span class="hint">Drag while <strong>Widget Mode</strong> is ON to rearrange. Resize by dragging the corner.</span>
+        <span class="hint">Drag while <strong>Widget Mode</strong> is ON to rearrange. Resize by dragging the
+          corner.</span>
       </div>
 
       <section id="widgets-grid" class="widgets-grid" aria-live="polite">
@@ -85,109 +88,140 @@
       </section>
     </main>
   </div>
-</div>
-
-<div class="top-bar">
-  <div id="app-name">Project StillStream</div>
-
-  <div id="weather">--°</div>
-
-  <div id="date-position">
-    <p style="font-size: 12px;">v1.2</p>
-    <div id="blur-toggle" class="switch">
-      <input type="checkbox" id="blurMode">
-      <span class="slider"></span>
-    </div>
-
-    <p id="currentDate" class="top-right-text"></p>
-
-    <div id="dateBackground"></div>
   </div>
-</div>
+
+  <div class="top-bar">
+    <div id="app-name">Project StillStream</div>
+
+    <div id="weather">--°</div>
+
+    <div id="date-position">
+      <p style="font-size: 12px;">v1.2.01</p>
+      <div id="blur-toggle" class="switch">
+        <input type="checkbox" id="blurMode">
+        <span class="slider"></span>
+      </div>
+
+      <p id="currentDate" class="top-right-text"></p>
+
+      <div id="dateBackground"></div>
+    </div>
+  </div>
 
 
-<div id="clock-container">
+  <div id="clock-container">
     <div id="clock-bg"></div>
 
     <div id="clock">00:00:00</div>
-</div>
+  </div>
 
-<div class="controls">
+  <div class="controls">
     <div class="control-group">
-        <label for="format">Hour Format:</label>
-        <select id="format"><option value="12">12-hour</option><option value="24">24-hour</option></select>
+      <label for="format">Hour Format:</label>
+      <select id="format">
+        <option value="12">12-hour</option>
+        <option value="24">24-hour</option>
+      </select>
     </div>
 
     <div class="control-group">
-        <label for="color">Text Color:</label>
-        <input type="color" id="color" value="#ffffff">
+      <label for="color">Text Color:</label>
+      <input type="color" id="color" value="#ffffff">
     </div>
 
     <div class="control-group">
-        <label for="style">Text Style:</label>
-        <select id="style"><option value="solid">Solid</option><option value="ambient">Ambient</option></select>
+      <label for="style">Text Style:</label>
+      <select id="style">
+        <option value="solid">Solid</option>
+        <option value="ambient">Ambient</option>
+      </select>
     </div>
 
     <div class="control-group">
-        <label for="seconds">Show Seconds:</label>
-        <label class="switch">
-            <input type="checkbox" id="seconds" checked>
-            <span class="slider"></span>
-        </label>
+      <label for="seconds">Show Seconds:</label>
+      <label class="switch">
+        <input type="checkbox" id="seconds" checked>
+        <span class="slider"></span>
+      </label>
     </div>
 
     <div class="control-group">
-        <label for="bgcolor">Background:</label>
-        <input type="color" id="bgcolor" value="#1e1e1e">
-        <label class="upload-btn" for="bgimage"><span class="upload-icon">+</span></label>
-        <input type="file" id="bgimage" accept="image/*">
+      <label for="bgcolor">Background:</label>
+      <input type="color" id="bgcolor" value="#1e1e1e">
+      <label class="upload-btn" for="bgimage"><span class="upload-icon">+</span></label>
+      <input type="file" id="bgimage" accept="image/*">
     </div>
 
     <div class="control-group" id="bg-url-group">
-        <label for="bgurl">Background URL:</label>
-        <input id="bgurl" type="text" placeholder="Paste image URL and press Enter" style="width:250px; padding:0.35rem 0.6rem; border-radius:20px; border:none; background: rgba(255,255,255,0.08); color:inherit;">
-        <button id="applyBgUrl" style="padding:0.35rem 0.75rem; border-radius:20px; border:none; cursor:pointer;">Apply</button>
-        <button id="clearBgUrl" style="padding:0.35rem 0.75rem; border-radius:20px; border:none; cursor:pointer;">Clear</button>
+      <label for="bgurl">Background URL:</label>
+      <input id="bgurl" type="text" placeholder="Paste image URL and press Enter"
+        style="width:250px; padding:0.35rem 0.6rem; border-radius:20px; border:none; background: rgba(255,255,255,0.08); color:inherit;">
+      <button id="applyBgUrl"
+        style="padding:0.35rem 0.75rem; border-radius:20px; border:none; cursor:pointer;">Apply</button>
+      <button id="clearBgUrl"
+        style="padding:0.35rem 0.75rem; border-radius:20px; border:none; cursor:pointer;">Clear</button>
     </div>
 
     <div class="control-group">
-        <label for="clockbg">Clock Background:</label>
-        <label class="switch">
-            <input type="checkbox" id="clockbg">
-            <span class="slider"></span>
-        </label>
+      <label for="clockbg">Clock Background:</label>
+      <label class="switch">
+        <input type="checkbox" id="clockbg">
+        <span class="slider"></span>
+      </label>
     </div>
 
     <div class="control-group">
-        <label for="autotext">Auto Text Color:</label>
-        <label class="switch">
-            <input type="checkbox" id="autotext" checked>
-            <span class="slider"></span>
-        </label>
+      <label for="autotext">Auto Text Color:</label>
+      <label class="switch">
+        <input type="checkbox" id="autotext" checked>
+        <span class="slider"></span>
+      </label>
     </div>
 
     <div class="control-group">
-        <label for="enableBlur">Enable Blur Effects:</label>
-        <label class="switch">
-            <input type="checkbox" id="enableBlur" checked>
-            <span class="slider"></span>
-        </label>
+      <label for="enableBlur">Enable Blur Effects:</label>
+      <label class="switch">
+        <input type="checkbox" id="enableBlur" checked>
+        <span class="slider"></span>
+      </label>
     </div>
 
     <div class="control-group">
-        <label for="blurControl">Blur Value (1-100):</label>
-        <input type="number" id="blurControl" class="blurControlINPUT" min="1" max="100" inputmode="numeric" placeholder="#px">
+      <label for="blurControl">Blur Value (1-100):</label>
+      <input type="number" id="blurControl" class="blurControlINPUT" min="1" max="100" inputmode="numeric"
+        placeholder="#px">
     </div>
 
     <div class="control-group">
-        <label for="showTopBar">Show Top Bar:</label>
-        <label class="switch">
-            <input type="checkbox" id="showTopBar" checked>
-            <span class="slider"></span>
-        </label>
+      <label for="showTopBar">Show Top Bar:</label>
+      <label class="switch">
+        <input type="checkbox" id="showTopBar" checked>
+        <span class="slider"></span>
+      </label>
     </div>
 
-</div>
-<script src="ModernClockFunction.js"></script>
+    <div class="control-group">
+      <button id="openModal">About the Creator</button>
+    </div>
+  </div>
+
+  <div id="modalOverlay" class="modal-overlay">
+    <div class="modal-content">
+      <span id="closeModal" class="close-btn">&times;</span>
+      <h2 style="padding-bottom: 10px; border-bottom: 1px solid #ccc;">About the Creator</h2>
+      <div class="scroll-area">
+        <p>The creator of this web application is one that has a passion for many things. Web development, 3D modeling, 3D animation, traditional and digital art, VR gaming, game development, and even content creation and digital media creation.</p>
+        <br>
+        <img src="Images/Sakura Brutalist Wallpaper iPhone 15.PNG" alt="Sakura Brutalist Wallpaper">
+        <br><br>
+        <p>The creator works in softwares such as Affinity, Photoshop, Visual Studio Code, and Unreal Engine 5. The creator has aspirations to work for frontend development, backend development, server management, game creation, web designing, taking art commissions, and much more.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="ModernClockFunction.js">
+  </script>
+
 </body>
+
 </html>

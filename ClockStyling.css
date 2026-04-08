@@ -1,12 +1,22 @@
-* { 
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Helvetica Neue', sans-serif; 
+  font-family: 'Helvetica Neue', sans-serif;
 }
 
 body, html {
-    height: 100%; width: 100%; background: #1e1e1e; color: #fff; transition: background 0.3s, color 0.3s; overflow: hidden; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center;
+  height: 100%;
+  width: 100%;
+  background: #1e1e1e;
+  color: #fff;
+  transition: background 0.3s, color 0.3s;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 :root {
@@ -18,69 +28,106 @@ body, html {
 }
 
 #clock-container {
-    position: relative; padding-left: 25px; padding-right: 25px;
+  position: relative;
+  padding-left: 25px;
+  padding-right: 25px;
 }
 
 #clock-bg {
-    position: absolute; inset: 0; border-radius: 64px;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    z-index: 0; display: none; 
-    transition: opacity 0.5s ease;
-    backdrop-filter: blur(var(--blur-amount));
-    -webkit-backdrop-filter: blur(var(--blur-amount));
+  position: absolute;
+  inset: 0;
+  border-radius: 64px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 0;
+  display: none;
+  transition: opacity 0.5s ease;
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
 }
 
 #clock {
-    font-size: 10rem; font-weight: bold; letter-spacing: 2px;
-    z-index: 1; position: relative;
-    transition: color 0.5s ease, text-shadow 0.5s ease;
-    color: #fff; text-align: center;
+  font-size: 10rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  z-index: 1;
+  position: relative;
+  transition: color 0.5s ease, text-shadow 0.5s ease;
+  color: #fff;
+  text-align: center;
 }
 
 .controls {
-    display: flex; gap: 1rem; background: rgba(255, 255, 255, 0.15);
-    padding: 1rem 2rem; border-radius: 100px; backdrop-filter: blur(var(--blur-amount));
-    -webkit-backdrop-filter: blur(var(--blur-amount)); width: 850px; justify-content: center; z-index: 1;
-    transition: background 0.3s ease; flex-wrap: wrap;
+  display: flex;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 1rem 2rem;
+  border-radius: 100px;
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  width: 850px;
+  justify-content: center;
+  z-index: 1;
+  transition: background 0.3s ease;
+  flex-wrap: wrap;
 }
 
 .controls {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%) translateY(0);
-    opacity: 0; /* hidden by default */
-    transition: transform 0.4s ease, opacity 0.4s ease;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  opacity: 0;
+  /* hidden by default */
+  transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
 .controls {
-    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease;
 }
 
 .controls button {
-    transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.control-group { display: flex; align-items: center; gap: 0.5rem; }
-label { font-size: 0.95rem; white-space: nowrap; }
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+label {
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
 select, input[type="color"] {
-    padding: 0.35rem 0.75rem; border-radius: 25px; border: none;
-    font-size: 0.95rem; cursor: pointer; background: rgba(255,255,255,0.2); color: #fff; appearance: none;
-    transition: color 0.5s ease, background 0.3s ease;
+  padding: 0.35rem 0.75rem;
+  border-radius: 25px;
+  border: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  appearance: none;
+  transition: color 0.5s ease, background 0.3s ease;
 }
 
 select option {
   color: #000;
-  background: #fff; 
+  background: #fff;
 }
 
 .switch {
-    position: relative; display: inline-block; width: 50px; height: 26px;
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
 }
 
 .switch {
-  position: relative; 
+  position: relative;
 }
 
 .switch input {
@@ -94,55 +141,95 @@ select option {
 }
 
 .slider {
-    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(255,255,255,0.3); transition: 0.4s; border-radius: 26px;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: 0.4s;
+  border-radius: 26px;
 }
 
 .slider:before {
-    position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
-    background-color: white; transition: 0.4s; border-radius: 50%;
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
 }
 
-input:checked + .slider { 
-  background-color: rgba(200,200,200,0.5); 
+input:checked+.slider {
+  background-color: rgba(200, 200, 200, 0.5);
 }
 
-input:checked + .slider:before {
-  transform: translateX(24px); 
+input:checked+.slider:before {
+  transform: translateX(24px);
 }
 
-.upload-btn { display: inline-flex; align-items: center; justify-content: center;
-    width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.25);
-    cursor: pointer; transition: background 0.2s;
+.upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  transition: background 0.2s;
 }
-.upload-btn:hover { background: rgba(255,255,255,0.4); }
-.upload-btn svg { width: 22px; height: 22px; fill: #fff; }
-input[type="file"] { display: none; }
+
+.upload-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.upload-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: #fff;
+}
+
+input[type="file"] {
+  display: none;
+}
 
 body::before {
-    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-size: cover; background-position: center; z-index: 0; transition: background-image 0.5s ease;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  transition: background-image 0.5s ease;
 }
 
-:root{
+:root {
   /* JS will update this to white/black with alpha */
-  --ambient-color: rgba(255,255,255,0.45);
+  --ambient-color: rgba(255, 255, 255, 0.45);
 }
 
 /* Ambient style for the CLOCK only: keep the overlay blend */
-.ambient-clock{
+.ambient-clock {
   color: var(--ambient-color);
   -webkit-background-clip: text;
   background-clip: text;
   mix-blend-mode: overlay;
-  text-shadow: 0 0 8px rgba(255,255,255,0.20);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.20);
   transition: color 0.5s ease, text-shadow 0.5s ease;
 }
 
 /* Ambient style for normal text (labels, date, simple spans) – NO blend mode */
-.ambient-ui{
+.ambient-ui {
   color: var(--ambient-color);
-  text-shadow: 0 0 6px rgba(0,0,0,0.12);
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
   transition: color 0.3s ease;
 }
 
@@ -156,30 +243,47 @@ body::before {
 
 /* Make color inputs appear as colored buttons */
 input[type="color"] {
-    appearance: none; -webkit-appearance: none; -moz-appearance: none; border: none; width: 60px; height: 27px;
-    border-radius: 24px; padding: 0; cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: none;
+  width: 60px;
+  height: 27px;
+  border-radius: 24px;
+  padding: 0;
+  cursor: pointer;
 }
-input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
 input[type="color"]::-webkit-color-swatch {
-    border: none; border-radius: 24px;
+  border: none;
+  border-radius: 24px;
 }
+
 .upload-icon {
   font-size: 1.5rem;
   font-weight: bold;
   color: #fff;
   user-select: none;
 }
+
 .upload-btn:hover .upload-icon {
   color: #ddd;
 }
+
 #clock-bg,
 .controls,
 #settings-btn,
 .top-bar,
 #dateBackground {
   transition: background 0.5s ease, color 0.5s ease;
-  color: var(--text-dark); /* default text */
+  color: var(--text-dark);
+  /* default text */
 }
+
 /* === make header & UI follow the theme color variable === */
 #app-name,
 #weather,
@@ -190,24 +294,37 @@ input[type="color"]::-webkit-color-swatch {
   color: var(--text-color);
   transition: color 0.25s ease;
 }
+
 #settings-btn {
   position: absolute;
   bottom: 15px;
   left: 50%;
   transform: translateX(-50%);
-  width: 60px; height: 60px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(20px);
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: transform 0.3s ease, background 0.3s ease;
   z-index: 2;
 }
-#settings-btn:hover { transform: translateX(-50%) scale(1.1); background: rgba(255,255,255,0.25); }
-#settings-btn span {
-  font-size: 1.5rem; font-weight: bold; color: #fff; user-select: none;
+
+#settings-btn:hover {
+  transform: translateX(-50%) scale(1.1);
+  background: rgba(255, 255, 255, 0.25);
 }
+
+#settings-btn span {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+  user-select: none;
+}
+
 .top-right-text {
   font-size: 12px;
   padding: 4px;
@@ -215,34 +332,48 @@ input[type="color"]::-webkit-color-swatch {
   margin: 0;
   transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
 }
-  .top-right-text:hover {
+
+.top-right-text:hover {
   border-radius: 24px;
   transition: background-color 0.3s ease-in-out;
 }
+
 #dateBackground {
   backdrop-filter: blur(20px);
   border-radius: 24px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   -webkit-backdrop-filter: blur(20px);
   z-index: 0;
 }
+
 .top-bar {
-  background-color: rgba(50, 50, 50, 0.1); /* Semi-transparent dark gray */
-  color: #f0f0f0; /* Off-white text color */
-  height: 31px; /* Typical macOS menu bar height */
+  background-color: rgba(50, 50, 50, 0.1);
+  /* Semi-transparent dark gray */
+  color: #f0f0f0;
+  /* Off-white text color */
+  height: 31px;
+  /* Typical macOS menu bar height */
   width: 100%;
-  position: fixed; /* Keeps the bar at the top even when scrolling */
+  position: fixed;
+  /* Keeps the bar at the top even when scrolling */
   top: 0;
   left: 0;
   backdrop-filter: blur(var(--blur-amount));
-  display: flex; /* Uses Flexbox for alignment */
-  justify-content: space-between; /* Pushes content to the left and right edges */
-  align-items: center; /* Centers items vertically */
-  padding: 0 10px; /* Some padding on the sides */
-  box-sizing: border-box; /* Ensures padding doesn't affect the width */
-  z-index: 1000; /* Ensures the bar is on top of other content */
+  display: flex;
+  /* Uses Flexbox for alignment */
+  justify-content: space-between;
+  /* Pushes content to the left and right edges */
+  align-items: center;
+  /* Centers items vertically */
+  padding: 0 10px;
+  /* Some padding on the sides */
+  box-sizing: border-box;
+  /* Ensures padding doesn't affect the width */
+  z-index: 1000;
+  /* Ensures the bar is on top of other content */
   border-radius: 0 0 12px 12px;
 }
+
 #app-name {
   font-size: 14px;
   font-weight: 500;
@@ -263,6 +394,7 @@ input[type="color"]::-webkit-color-swatch {
 #blur-toggle {
   transform: scale(0.8);
 }
+
 /* -----------------------------
   No-blur helper (toggle off all blurs)
   ----------------------------- */
@@ -275,19 +407,21 @@ input[type="color"]::-webkit-color-swatch {
   JS will set the correct background color per current light/dark mode; this rule
   keeps a safe fallback. */
 .no-blur[data-bg="dark"] {
-  background: rgba(0,0,0,0.20) !important;
+  background: rgba(0, 0, 0, 0.20) !important;
 }
+
 .no-blur[data-bg="light"] {
-  background: rgba(255,255,255,0.12) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
 }
 
 /* Optional: small transition so disabling/enabling blur feels smooth */
 #clock-bg, .controls, #settings-btn, .top-bar, #dateBackground {
   transition: background 0.35s ease, color 0.25s ease, backdrop-filter 0.35s ease;
 }
+
 /* Background URL input matching controls */
 #bg-url-group input {
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--text-color, #fff);
   border-radius: 20px;
   padding: 0.35rem 0.6rem;
@@ -296,8 +430,9 @@ input[type="color"]::-webkit-color-swatch {
   width: 320px;
   transition: background 0.2s ease, color 0.2s ease;
 }
+
 #bg-url-group button {
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.12);
   color: var(--text-color, #fff);
   border: none;
   border-radius: 20px;
@@ -305,26 +440,54 @@ input[type="color"]::-webkit-color-swatch {
   cursor: pointer;
   transition: background 0.15s ease, transform 0.08s ease;
 }
-#bg-url-group button:hover { transform: translateY(-1px); background: rgba(255,255,255,0.18); }
-#bg-url-group input::placeholder { color: rgba(255,255,255,0.45); }
+
+#bg-url-group button:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+#bg-url-group input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
 /* --- Floating widgets FAB (reuses settings-btn look) --- */
 .fab-btn {
   position: absolute;
   bottom: 15px;
-  left: calc(50% + 38px); /* sits a bit to the right of center; adjust to taste */
+  left: calc(50% + 38px);
+  /* sits a bit to the right of center; adjust to taste */
   transform: translateX(-50%);
-  width: 60px; height: 60px; border-radius: 50%;
-  background: rgba(255,255,255,0.15);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(20px);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1200;
   transition: transform 0.3s ease, background 0.3s ease;
 }
-.fab-btn:hover { transform: translateX(-50%) scale(1.08); background: rgba(255,255,255,0.22); }
-.fab-btn span { font-size: 1.5rem; color: #fff; user-select: none; }
 
-.fab-btn { color: var(--text-color); }
-.fab-btn span { color: var(--text-color); }
+.fab-btn:hover {
+  transform: translateX(-50%) scale(1.08);
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.fab-btn span {
+  font-size: 1.5rem;
+  color: #fff;
+  user-select: none;
+}
+
+.fab-btn {
+  color: var(--text-color);
+}
+
+.fab-btn span {
+  color: var(--text-color);
+}
 
 /* If you already have #settings-btn, ensure left offsets don't clash:
     #settings-btn kept at left: calc(50% - 38px) is expected. */
@@ -332,41 +495,79 @@ input[type="color"]::-webkit-color-swatch {
 /* --- Widgets panel overlay --- */
 #widgets-panel {
   position: fixed;
-  inset: 6vh 6vw; /* takes up most of the screen with margins */
-  background: rgba(20,20,20,0.85);
+  inset: 6vh 6vw;
+  /* takes up most of the screen with margins */
+  background: rgba(20, 20, 20, 0.85);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-radius: 18px;
-  display: none; /* hidden by default */
+  display: none;
+  /* hidden by default */
   z-index: 2000;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
   overflow: hidden;
   color: var(--text-color, #fff);
 }
 
 /* inner wrapper for spacing */
-.widgets-panel-inner { height: 100%; display:flex; flex-direction:column; }
+.widgets-panel-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
 /* header */
 .widgets-panel-header {
-  display:flex; align-items:center; justify-content:space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 18px 28px;
 }
-.widgets-panel-header h2 { margin-right: 14px; font-size: 1.2rem; }
-.widget-mode-row { display:flex; align-items:center; gap:10px; }
+
+.widgets-panel-header h2 {
+  margin-right: 14px;
+  font-size: 1.2rem;
+}
+
+.widget-mode-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
 /* small switch style override (smaller) */
-.switch.small { transform: scale(0.85); }
+.switch.small {
+  transform: scale(0.85);
+}
 
 /* divider */
-.divider { border: none; height: 1px; background: rgba(255,255,255,0.06); margin: 0 20px; }
+.divider {
+  border: none;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 0 20px;
+}
 
 /* body */
-.widgets-panel-body { padding: 16px 24px 28px 24px; overflow:auto; flex:1; }
+.widgets-panel-body {
+  padding: 16px 24px 28px 24px;
+  overflow: auto;
+  flex: 1;
+}
 
 /* toolbar */
-.widgets-toolbar { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-.widgets-toolbar .hint { color: rgba(255,255,255,0.6); font-size:0.9rem; margin-left: 12px; }
+.widgets-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.widgets-toolbar .hint {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  margin-left: 12px;
+}
 
 /* grid */
 .widgets-grid {
@@ -378,55 +579,112 @@ input[type="color"]::-webkit-color-swatch {
 
 /* widget tile */
 .widget-tile {
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 12px;
   padding: 12px;
   min-height: 96px;
   position: relative;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
   cursor: grab;
   user-select: none;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
   overflow: hidden;
 }
-.widget-tile:active { cursor: grabbing; transform: scale(0.998); }
+
+.widget-tile:active {
+  cursor: grabbing;
+  transform: scale(0.998);
+}
 
 /* controls in corners */
-.widget-controls { position:absolute; top:8px; right:8px; display:flex; gap:6px; z-index:2; }
+.widget-controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+
 .widget-controls .widget-delete,
-.widget-controls .widget-edit { background: rgba(255,255,255,0.06); border: none; border-radius:8px; padding:6px; cursor:pointer; }
+.widget-controls .widget-edit {
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+}
 
 /* Title / content */
-.widget-title { font-weight:600; margin-bottom:6px; }
-.widget-body { font-size: 0.95rem; color: rgba(255,255,255,0.9); }
+.widget-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.widget-body {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+}
 
 /* resize handle visual */
 .resize-handle {
-  position:absolute;
-  width:18px; height:18px;
-  bottom:6px; right:6px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  bottom: 6px;
+  right: 6px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
   border-radius: 4px;
   cursor: se-resize;
-  z-index:3;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.4) inset;
+  z-index: 3;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.4) inset;
 }
 
 /* Small icon button */
-.icon-btn { background:transparent; color:var(--text-color); border:none; cursor:pointer; font-size:18px; padding:6px; }
+.icon-btn {
+  background: transparent;
+  color: var(--text-color);
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 6px;
+}
 
 /* Visible when panel open */
-#widgets-panel[aria-hidden="false"] { display: block; }
+#widgets-panel[aria-hidden="false"] {
+  display: block;
+}
 
 /* Visual styling when widget mode active (for grid & tile handles) */
-.widget-mode-active .widget-tile { outline: 2px dashed rgba(255,255,255,0.06); }
-.widget-mode-active .resize-handle { opacity: 1; }
-.widget-mode-active .widget-controls { opacity: 1; }
+.widget-mode-active .widget-tile {
+  outline: 2px dashed rgba(255, 255, 255, 0.06);
+}
+
+.widget-mode-active .resize-handle {
+  opacity: 1;
+}
+
+.widget-mode-active .widget-controls {
+  opacity: 1;
+}
 
 /* By default hide controls/handles to avoid noisy UI when not in widget mode */
-.widget-controls { opacity: 0; transition: opacity 0.18s ease; pointer-events:none; }
-.resize-handle { opacity: 0; transition: opacity 0.18s ease; pointer-events:none; }
-.widget-mode-active .widget-controls { pointer-events:auto; }
+.widget-controls {
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+}
+
+.resize-handle {
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+}
+
+.widget-mode-active .widget-controls {
+  pointer-events: auto;
+}
+
 /* --- Desktop grid when widget mode active --- */
 body.widget-mode-active {
   cursor: default;
@@ -437,17 +695,20 @@ body.widget-mode-active {
   inset: 0;
   pointer-events: none;
   z-index: 1100;
-  background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
   background-size: 20px 20px;
   opacity: 0;
   transition: opacity 0.28s ease;
 }
-body.widget-mode-active #desktop-grid-overlay { opacity: 1; }
+
+body.widget-mode-active #desktop-grid-overlay {
+  opacity: 1;
+}
 
 .desktop-widget {
   position: absolute;
   z-index: 1110;
-  box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
   cursor: grab;
   transition: transform 0.18s ease, opacity 0.2s ease;
 }
@@ -459,38 +720,112 @@ body.widget-mode-active #desktop-grid-overlay { opacity: 1; }
 }
 
 .widget-tile .widget-controls,
-.desktop-widget .widget-controls { opacity: 0; pointer-events: none; transition: opacity 0.12s ease; }
-.widget-tile:hover .widget-controls,
-.desktop-widget:hover .widget-controls { opacity: 1; pointer-events: auto; }
+.desktop-widget .widget-controls {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
 
-.resize-handle { touch-action: none; }
+.widget-tile:hover .widget-controls,
+.desktop-widget:hover .widget-controls {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.resize-handle {
+  touch-action: none;
+}
 
 #widgets-btn, #settings-btn {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(var(--blur-amount));
   color: var(--text-color);
-  
+
 }
-#widgets-btn span { color: var(--text-color); }
+
+#widgets-btn span {
+  color: var(--text-color);
+}
 
 #clock-container.transitioning {
-  transition: transform 0.35s cubic-bezier(.2,.9,.2,1), opacity 0.28s ease;
+  transition: transform 0.35s cubic-bezier(.2, .9, .2, 1), opacity 0.28s ease;
 }
 
 .blurControlINPUT {
-    width: 55px;
-    border-radius: 50px;
-    height: 25px;
+  width: 55px;
+  border-radius: 50px;
+  height: 25px;
 }
 
 input {
-    border: none;
-    outline: none;
-    text-align: center;
+  border: none;
+  outline: none;
+  text-align: center;
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Creator Pop Up Styling */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+  backdrop-filter: blur(10px);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: rgba(50, 50, 50, 0.4);
+  border-radius: 25px;
+  border: none;
+  width: 60%;
+  max-width: 60%;
+  min-width: 20%;
+  backdrop-filter: blur(20px);
+  height: 500px;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.scroll-area {
+  overflow-y: auto;
+  flex-grow: 1;
+  margin-top: 10px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 28px;
+}
+
+#openModal {
+  padding: 7px 10px;
+  border-radius: 100px;
+  border: none;
+  background-color: var(--blur-bg-light);
+  color: white;
+}
+
+.modal-overlay .modal-content .scroll-area img {
+  width: 90%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+  margin: 0 auto;
 }

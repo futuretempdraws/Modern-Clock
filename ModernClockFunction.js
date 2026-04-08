@@ -1,3 +1,4 @@
+// Set all constants at beginning of run //
 const clock = document.getElementById('clock');
 const clockBg = document.getElementById('clock-bg');
 const clockBgToggle = document.getElementById('clockbg');
@@ -15,6 +16,9 @@ const settingsBtn = document.getElementById('settings-btn');
 const autoTextToggle = document.getElementById('autotext');
 const uiTextNodes = document.querySelectorAll('label, .top-right-text, #settings-btn span, .upload-icon, #app-name, #weather'); // This is where you'll update the text that will update when ambient mode is turned on or off //
 const isAmbient = () => styleSelect.value === 'ambient';
+const modal = document.getElementById('modalOverlay');
+const openBtn = document.getElementById('openModal');
+const closeBtn = document.getElementById('closeModal');
 
 // Small helper if you ever want to set ambient via the color picker in solid hex
 const hexToRgba = (hex, a = 0.45) => {
@@ -340,6 +344,19 @@ function applyBlurTheme(isLight) {
       // don't set el.style.color here: let CSS var handle it
       el.style.transition = 'background 0.5s ease, color 0.5s ease';
     });
+}
+
+// Opening creator pop-up
+openBtn.onclick = () => modal.style.display = 'flex';
+
+// Closing with X button
+closeBtn.onclick = () => modal.style.display = 'none';
+
+// Close creator pop-up by clicking outside
+window.onclick = (event) => {
+  if (event.target == modal) {
+    modal.style.display = 'none';
+  }
 }
 
 // --- Toggle blur effects on/off ---
